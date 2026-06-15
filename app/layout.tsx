@@ -20,6 +20,10 @@ const workSans = Work_Sans({
   display: "swap",
 });
 
+// Application pilotée par la base de données (menus, stock, avis, commandes) :
+// rendu dynamique par requête plutôt que prégénération statique au build.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: {
     default: "Vite & Gourmand — Traiteur à Bordeaux",

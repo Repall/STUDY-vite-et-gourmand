@@ -1,21 +1,6 @@
 import Link from "next/link";
-
-// Avis statiques pour la maquette de référence — seront lus depuis la table
-// `avis` (statut = 'valide') en Phase 4.
-const avis = [
-  {
-    note: 5,
-    texte:
-      "Prestation impeccable, plats délicieux et livraison ponctuelle. Je recommande les yeux fermés !",
-    auteur: "Jean D.",
-  },
-  {
-    note: 4,
-    texte:
-      "Très bon menu de Noël, copieux et savoureux. Un vrai régal partagé en famille.",
-    auteur: "Marie M.",
-  },
-];
+import { getAvisValides } from "@/lib/data";
+import { Etoiles } from "@/components/ui/etoiles";
 
 const savoirFaire = [
   {
@@ -32,16 +17,9 @@ const savoirFaire = [
   },
 ];
 
-function Etoiles({ note }: { note: number }) {
-  return (
-    <span aria-label={`Note de ${note} sur 5`} className="text-gold">
-      {"★".repeat(note)}
-      <span className="text-border">{"★".repeat(5 - note)}</span>
-    </span>
-  );
-}
+export default async function Home() {
+  const avis = await getAvisValides(4);
 
-export default function Home() {
   return (
     <>
       {/* Hero */}
@@ -100,33 +78,35 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Avis clients */}
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <div className="max-w-2xl">
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Ils nous ont fait confiance
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            La satisfaction de nos clients, après chaque prestation.
-          </p>
-        </div>
-        <div className="mt-10 grid gap-6 md:grid-cols-2">
-          {avis.map((a, i) => (
-            <figure
-              key={i}
-              className="rounded-2xl border border-border bg-surface p-6 shadow-sm"
-            >
-              <Etoiles note={a.note} />
-              <blockquote className="mt-4 text-lg leading-relaxed text-foreground">
-                « {a.texte} »
-              </blockquote>
-              <figcaption className="mt-4 text-sm font-medium text-muted-foreground">
-                — {a.auteur}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </section>
+      {/* Avis clients validés */}
+      {avis.length > 0 && (
+        <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Ils nous ont fait confiance
+            </h2>
+            <p className="mt-3 text-muted-foreground">
+              La satisfaction de nos clients, après chaque prestation.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            {avis.map((a, i) => (
+              <figure
+                key={i}
+                className="rounded-2xl border border-border bg-surface p-6 shadow-sm"
+              >
+                <Etoiles note={a.note} />
+                <blockquote className="mt-4 text-lg leading-relaxed text-foreground">
+                  « {a.description} »
+                </blockquote>
+                <figcaption className="mt-4 text-sm font-medium text-muted-foreground">
+                  — {a.prenom} {a.nom.charAt(0)}.
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
     </>
   );
 }
