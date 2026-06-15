@@ -41,6 +41,9 @@ yarn-error.log*
 /AGENTS.md
 /CLAUDE.md
 
+# base de données locale (PGlite, dev)
+/.pgdata/
+
 # vercel
 .vercel
 

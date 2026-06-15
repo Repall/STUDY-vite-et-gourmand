@@ -1,19 +1,21 @@
 import Link from "next/link";
+import { getHoraires } from "@/lib/data";
+import { formatHeure } from "@/lib/format";
 
-// Horaires affichés en pied de page (provisoirement statiques — seront lus
-// depuis la table `horaire` en Phase 4).
-const horaires = [
-  { jour: "Lundi", h: "09h00 – 18h00" },
-  { jour: "Mardi", h: "09h00 – 18h00" },
-  { jour: "Mercredi", h: "09h00 – 18h00" },
-  { jour: "Jeudi", h: "09h00 – 18h00" },
-  { jour: "Vendredi", h: "09h00 – 19h00" },
-  { jour: "Samedi", h: "10h00 – 17h00" },
-  { jour: "Dimanche", h: "Fermé" },
-];
+const LIBELLES_JOURS: Record<string, string> = {
+  lundi: "Lundi",
+  mardi: "Mardi",
+  mercredi: "Mercredi",
+  jeudi: "Jeudi",
+  vendredi: "Vendredi",
+  samedi: "Samedi",
+  dimanche: "Dimanche",
+};
 
-/** Pied de page : présentation, horaires (lun → dim) et liens légaux. */
-export function SiteFooter() {
+/** Pied de page : présentation, horaires (lun → dim, depuis la BDD) et liens légaux. */
+export async function SiteFooter() {
+  const horaires = await getHoraires();
+
   return (
     <footer className="border-t border-border bg-foreground text-background/90">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-3">
@@ -34,8 +36,12 @@ export function SiteFooter() {
           <dl className="mt-3 space-y-1 text-sm text-background/80">
             {horaires.map((h) => (
               <div key={h.jour} className="flex justify-between gap-6">
-                <dt>{h.jour}</dt>
-                <dd className="tabular-nums">{h.h}</dd>
+                <dt>{LIBELLES_JOURS[h.jour] ?? h.jour}</dt>
+                <dd className="tabular-nums">
+                  {h.ferme
+                    ? "Fermé"
+                    : `${formatHeure(h.heure_ouverture)} – ${formatHeure(h.heure_fermeture)}`}
+                </dd>
               </div>
             ))}
           </dl>
@@ -67,7 +73,7 @@ export function SiteFooter() {
 
       <div className="border-t border-background/10">
         <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-background/60 sm:px-6">
-          © {new Date().getFullYear()} Vite &amp; Gourmand — Bordeaux. Tous droits réservés.
+          © {new Date().getFullYear()}{" "}Vite &amp; Gourmand — Bordeaux. Tous droits réservés.
         </p>
       </div>
     </footer>
